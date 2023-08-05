@@ -1,0 +1,191 @@
+---
+import { getHighlighter } from 'shiki';
+import cornLanguage from "../../cornLanguage";
+
+// import Corn from 'libcorn';
+// import YAML from 'yaml';
+// import TOML from '@tuzig/toml';
+
+async function parseCorn(corn: string, format: 'json' | 'yaml' | 'toml') {
+    const url = `${import.meta.env.CORN_API_URL}/parse`;
+
+    return await fetch(url, {
+        method: 'POST',
+        headers: { accept: `application/${format}` },
+        body: corn
+    }).then(r => r.text());
+}
+
+function unescapeHtml(html: string) {
+    return html
+        .replaceAll("&amp;", "&")
+        .replaceAll("&lt;", "<")
+        .replaceAll("&gt;", ">")
+        .replaceAll('&quot;', '"')
+        .replaceAll('&#39;', "'")
+        .replaceAll('&#x2F;', "/")
+        // <https://stackoverflow.com/a/1732454> sorry :(
+        .replace(/<[^>]+>/g, "");
+}
+
+// function replacer(_key: string, value: unknown) {
+//     if(value instanceof Map) {
+//         return Object.fromEntries(value.entries());
+//     } else {
+//         return value;
+//     }
+// }
+
+const highlighter = await getHighlighter({
+    theme: 'github-dark',
+    langs: ['json', 'yaml', 'toml', cornLanguage],
+});
+
+const corn = await Astro.slots.render('default').then(unescapeHtml);
+// const parsed = Corn.parse(corn);
+//
+// const json = JSON.stringify(parsed, replacer, 2);
+// const jsonObj = JSON.parse(json);
+//
+// const yaml = YAML.stringify(parsed);
+// const toml = TOML.stringify(jsonObj);
+
+const json = await parseCorn(corn, 'json');
+const yaml = await parseCorn(corn, 'yaml');
+const toml = await parseCorn(corn, 'toml');
+
+const cornHtml = highlighter.codeToHtml(corn, {lang: 'corn'});
+const jsonHtml = highlighter.codeToHtml(json, {lang: 'json'});
+const yamlHtml = highlighter.codeToHtml(yaml, {lang: 'yaml'});
+const tomlHtml = highlighter.codeToHtml(toml, {lang: 'toml'});
+
+const id = Math.random().toString(36).substring(2);
+
+---
+<div class="code-block">
+    <div class="tabs">
+        <button id=`btn-corn-${id}` class="active">Corn</button><button id=`btn-json-${id}`>JSON</button><button id=`btn-yaml-${id}`>YAML</button><button id=`btn-toml-${id}`>TOML</button>
+    </div>
+    <div class="tab" id=`corn-${id}`>
+        <div set:html={cornHtml} />
+    </div>
+    <div class="tab" id=`json-${id}` style="display: none">
+        <div set:html={jsonHtml}/>
+    </div>
+    <div class="tab" id=`yaml-${id}` style="display: none">
+        <div set:html={yamlHtml}/>
+    </div>
+    <div class="tab" id=`toml-${id}` style="display: none">
+        <div set:html={tomlHtml}/>
+    </div>
+</div>
+
+<script define:vars={{ id }}>
+    const btnCorn = document.querySelector(`#btn-corn-${id}`);
+    const btnJson = document.querySelector(`#btn-json-${id}`);
+    const btnYaml = document.querySelector(`#btn-yaml-${id}`);
+    const btnToml = document.querySelector(`#btn-toml-${id}`);
+
+    const tabCorn = document.querySelector(`#corn-${id}`);
+    const tabJson = document.querySelector(`#json-${id}`);
+    const tabYaml = document.querySelector(`#yaml-${id}`);
+    const tabToml = document.querySelector(`#toml-${id}`);
+
+    btnCorn.addEventListener('click', () => {
+        tabCorn.style.display = 'block';
+        tabJson.style.display = 'none';
+        tabYaml.style.display = 'none';
+        tabToml.style.display = 'none';
+
+        btnCorn.classList.add('active');
+        btnJson.classList.remove('active');
+        btnYaml.classList.remove('active');
+        btnToml.classList.remove('active');
+    });
+
+    btnJson.addEventListener('click', () => {
+        tabCorn.style.display = 'none';
+        tabJson.style.display = 'block';
+        tabYaml.style.display = 'none';
+        tabToml.style.display = 'none';
+
+        btnCorn.classList.remove('active');
+        btnJson.classList.add('active');
+        btnYaml.classList.remove('active');
+        btnToml.classList.remove('active');
+    });
+
+    btnYaml.addEventListener('click', () => {
+        tabCorn.style.display = 'none';
+        tabJson.style.display = 'none';
+        tabYaml.style.display = 'block';
+        tabToml.style.display = 'none';
+
+        btnCorn.classList.remove('active');
+        btnJson.classList.remove('active');
+        btnYaml.classList.add('active');
+        btnToml.classList.remove('active');
+    });
+
+    btnToml.addEventListener('click', () => {
+        tabCorn.style.display = 'none';
+        tabJson.style.display = 'none';
+        tabYaml.style.display = 'none';
+        tabToml.style.display = 'block';
+
+        btnCorn.classList.remove('active');
+        btnJson.classList.remove('active');
+        btnYaml.classList.remove('active');
+        btnToml.classList.add('active');
+    });
+</script>
+
+<style>
+    .code-block {
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .code-block {
+            box-shadow: 0 2px 4px 0 rgba(128, 128, 128, 0.1), 0 3px 4px 0 rgba(128, 128, 128, 0.09);
+        }
+    }
+
+    button {
+        font-family: "JetBrains Mono", "Source Code Pro", Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
+        Bitstream Vera Sans Mono, Courier New, monospace;
+
+        padding-block: 7px;
+        padding-inline: 14px;
+        margin: 0;
+
+        background-color: var(--color-background);
+
+        font-size: 1rem;
+
+        color: var(--color-text);
+        text-decoration: none;
+        text-align: center;
+
+        cursor: pointer;
+        outline: none;
+
+        border: none;
+        border-bottom: 4px solid rgba(0, 0, 0, 0);
+    }
+
+    button.active {
+        border-bottom-color: var(--color-primary);
+    }
+
+    .tab {
+        margin-top: -1px;
+        border-radius: 0 3px 3px 3px;
+    }
+</style>
+
+<style is:global>
+    .code-block pre {
+        margin: 0;
+    }
+</style>

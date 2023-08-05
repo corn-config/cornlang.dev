@@ -6,6 +6,7 @@
       <script value="dev" />
     </scripts>
     <node-interpreter value="project" />
+    <node-options value="--experimental-wasm-modules" />
     <envs />
     <method v="2" />
   </configuration>

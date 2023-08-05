@@ -1,0 +1,64 @@
+---
+import type { MarkdownLayoutProps } from "astro";
+import MarkdownNavigation from "../components/MarkdownNavigation.astro";
+import Layout from "./Layout.astro";
+type Props = MarkdownLayoutProps<{title: string}>;
+
+const { headings, frontmatter } = Astro.props as Props;
+
+---
+
+<Layout title={`${frontmatter.title} | Corn`}>
+    <div class="container">
+        <MarkdownNavigation headings={headings} />
+        <main class="document">
+            <slot />
+        </main>
+
+    </div>
+</Layout>
+
+<style>
+    .container {
+        display: flex;
+        position: relative;
+    }
+</style>
+
+<style is:global>
+    h1, h2, h3, h4, h5, h6, a {
+        color: var(--color-primary);
+        margin-top: 2em;
+    }
+
+    .document {
+        padding: 0 5em 5em;
+    }
+
+    :not(pre) code {
+        background-color: var(--color-dark);
+        color: white;
+        padding-inline: 0.2em;
+        white-space: pre-wrap;
+    }
+
+    pre code {
+        display: block;
+        padding: 1em;
+        border-radius: 3px;
+    }
+
+    blockquote {
+        background-color: var(--color-dark);
+        margin: 0;
+        padding: 0.2em;
+        padding-inline: 1em;
+        border-left: 10px solid var(--color-secondary);
+    }
+
+    @media print {
+        .document {
+            padding: 0;
+        }
+    }
+</style>

@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="build --verbose" type="js.build_tools.npm" nameIsGenerated="true">
+    <package-json value="$PROJECT_DIR$/package.json" />
+    <command value="run" />
+    <scripts>
+      <script value="build" />
+    </scripts>
+    <arguments value="--verbose" />
+    <node-interpreter value="project" />
+    <node-options value="--experimental-wasm-modules --experimental-specifier-resolution=node --trace-warnings" />
+    <envs />
+    <method v="2" />
+  </configuration>
+</component>

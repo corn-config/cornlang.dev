@@ -1,0 +1,44 @@
+---
+interface Props {
+    title: string;
+}
+
+const { title} = Astro.props;
+---
+
+<div class="feature">
+    <header>
+        <h2>{title}</h2>
+    </header>
+    <div class="content">
+        <slot />
+    </div>
+</div>
+
+<style>
+    .feature {
+        flex: 1;
+        flex-basis: 350px;
+
+        border: 1px solid var(--color-primary);
+        border-radius: 3px;
+    }
+
+    header {
+        padding-inline: 1em;
+        padding-block: 1.5em;
+        background-color: var(--color-primary);
+    }
+
+    h2 {
+        margin: 0;
+        font-weight: 300;
+        color: white;
+    }
+
+    .content {
+        padding: 1em;
+        line-height: 1.8;
+        font-size: 1.125em;
+    }
+</style>

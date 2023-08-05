@@ -1,0 +1,73 @@
+---
+import { Image } from 'astro:assets';
+import cornIcon from '../assets/corn.png';
+
+// don't fetch from GH in dev mode, since we'll get rate limited
+let tag = 'v0.0.0';
+if (import.meta.env.PROD) {
+    const releaseUrl = 'https://api.github.com/repos/jakestanger/corn/releases/latest';
+    tag = await fetch(releaseUrl).then(r => r.json()).then(r => r.tag_name as string);
+}
+
+---
+<nav class="top-nav">
+    <div>
+        <a href='/'>
+            <Image src={cornIcon} width={24} alt="Corn icon" class="icon"/>
+            <span class="title">Corn</span>
+        </a>
+        <a class="nav-item" href="/user-guide">User guide</a>
+        <a class="nav-item" href="/spec">Full specification</a>
+    </div>
+    <div>
+        <a href="https://github.com/jakestanger/corn" target="_blank">
+            <picture>
+                <source srcset={'/github-mark-white.svg'} media="(prefers-color-scheme:dark)"/>
+                <img src={'/github-mark.svg'} alt="GitHub" class="icon"/>
+            </picture>
+            <span class="version">{tag}</span>
+        </a>
+    </div>
+</nav>
+
+<style>
+    .top-nav {
+        padding: 0.5em;
+        display: flex;
+        justify-content: space-between;
+        border: 1px solid var(--color-light);
+    }
+
+    .icon {
+        width: 24px;
+        translate: 0 4px;
+    }
+
+    .title {
+        font-size: 1.2em;
+    }
+
+    .version {
+        margin-left: 0.3em;
+        filter: brightness(0.95);
+    }
+
+    .top-nav a {
+        color: var(--color-text);
+        padding-inline: 0.5em;
+    }
+
+    .top-nav a:hover {
+        filter: none;
+    }
+
+    .top-nav span {
+        padding-inline: 0.3em;
+    }
+
+    .nav-item {
+        font-weight: 300;
+        letter-spacing: 0.05em;
+        filter: brightness(0.95);
+    }
+</style>

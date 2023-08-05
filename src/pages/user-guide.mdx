@@ -1,0 +1,438 @@
+---
+layout: ../layouts/Markdown.astro
+title: User guide
+---
+
+import CodeBlock from '../components/CodeBlock.astro';
+
+# User guide
+
+## Install the CLI
+
+The official Corn CLI can be installed using cargo:
+
+```sh
+cargo install corn-cli
+```
+
+This installs a binary named `corn`.
+
+The CLI can take input from `.corn` files or stdin, and parse it into JSON, YAML or TOML.
+This allows you to write Corn and use it in existing solutions straight away.
+
+For example:
+
+```sh
+corn my-file.corn -t yaml
+```
+
+Use `corn --help` to view all options.
+
+## Install a Library
+
+Corn can be integrated into your project with a library.
+
+### Rust
+
+Add the latest version of `libcorn` from Crates.io to your project:
+
+```sh
+cargo add libcorn
+```
+
+The library supports deserialization via `serde`:
+
+
+```rust
+use serde::Deserialize;
+
+#[derive(Deserialize)]
+struct Config {
+    foo: u8
+}
+
+fn main() {
+    let corn = "{foo = 42}";
+    let config = corn::from_str::<Config>(corn)?;
+    assert_eq!(config.foo, 42);
+}
+
+```
+
+You can also use `corn::parse` to output an AST in the form of the `corn::Value` enum.
+This can be serialized or used to **TODO**
+
+```rust
+fn main() {
+    let corn = "{foo = 42}";
+    let config: Value = corn::parse(corn)?;
+}
+```
+
+For full details, see the [docs](https://docs.rs/libcorn).
+View the crate [here](https://crates.io/crates/libcorn).
+
+### JavaScript
+
+The `libcorn` library includes WASM support, allowing you to use the native parser in Node.js and browser environments.
+
+> When running under Node.js you will require `--experimental-modules` for versions `<= 16`.
+> On all versions you require `--experimental-wasm-modules`.
+
+Add the latest version of `libcorn` from NPM to your project:
+
+```shell
+npm i --save libcorn
+# or
+yarn add libcorn
+# or
+pnpm add libcorn
+```
+
+The library exposes a single `parse` function, which will produce a `Map`.
+Parser errors are exposed in the JS environment and can be caught in the standard manner.
+
+```js
+import * as corn from 'libcorn';
+
+const parsed = corn.parse('{foo = "bar"}');
+console.log(parsed); // Map(foo -> "bar")
+```
+
+View the package [here](https://www.npmjs.com/package/libcorn).
+
+### Lua
+
+The `libcorn` library includes Lua binding support, allowing you to use the native parser.
+
+> Currently, Lua requires manual compilation.
+> You must have Lua installed, and compile targeting the installed version.
+
+Clone the repo and build with Lua support:
+
+```shell
+git clone https://github.com/jakestanger/corn
+cd corn
+cargo build -p libcorn --release --features lua54
+```
+
+The following Lua versions are available - change the above feature depending on the target version.
+
+- `lua51`
+- `lua52`
+- `lua53`
+- `lua54`
+- `luajit`
+- `luajit52`
+
+Next copy `target/release/libcorn.so` to your Lua project working dir.
+The library can then be used as follows:
+
+```lua
+local libcorn = require("libcorn")
+
+local success, res = pcall(libcorn.parse, '{foo = "bar"}')
+if success then
+    print(res.foo) -- lua table
+else
+    print(res) -- pretty printed error
+end
+
+```
+
+## Editor support
+
+TODO
+
+---
+
+
+## The basics
+
+> Throughout the rest of this guide, you will see tabbed code blocks.
+> These take the Corn input, parse it using the `libcorn` JavaScript bindings detailed above,
+> and produce the outputted JSON/YAML/TOML automatically.
+
+Corn is written inside `.corn` files.
+
+Beginning with the obligatory hello world example:
+
+<CodeBlock>
+```corn
+{ value = "hello world" }
+```
+</CodeBlock>
+
+Every Corn file contains a single top-level object.
+Inside that object, much like JSON, are key/value pairs.
+
+Keys are not quoted and can contain any UTF-8 characters (yes, including emoji...) except whitespace, dots `.` and equals `=`.
+Dots are a special case that we'll see later on.
+
+Line comments are supported with `//`.
+
+Values can be any type, again much like JSON:
+
+<CodeBlock>
+```corn
+{
+  a = "hello world" // string
+  b = 123 // integer
+  c = 3.14 // float
+  d = false // boolean
+  e = null // null
+  f = { } // object
+  g = [ ] // array
+}
+```
+</CodeBlock>
+
+Note no punctuation is needed between keys.
+
+> Corn is very lenient on whitespace and in many places it can be omitted.
+> Keys can all be on one line so long as there is separation between a key and the previous value.
+
+Arrays work in much the same way:
+
+<CodeBlock>
+```corn
+{
+  array = [ "one fish" "two fish" "red fish" "blue fish" ]
+}
+```
+</CodeBlock>
+
+Of course, you can mix types including objects in arrays and arrays in objects in any combination to any depth.
+
+<CodeBlock>
+```corn
+{
+  array = [
+    "one fish"
+    "two fish"
+    "red fish"
+    {
+      complex_fish = true
+      name = "Barry"
+      age = 2
+      eats = [ "other fish" "algae" ]
+    }
+  ]
+}
+```
+</CodeBlock>
+
+## Features
+
+So far, you've seen Corn's basic syntax.
+You're probably thinking it looks pretty close to all the others, so what makes it special?
+This next section aims to show the cool stuff that answers that.
+
+The functionality available is kept purposely simple, with the belief that if you need more, you're probably using the wrong tool.
+The few tools available to you here though should prove very powerful.
+
+### Key chaining
+
+The first and simplest of the features allows you to chain keys with `dot.notation` to create nested objects instantly.
+Chains can be as long as you like, and you can mix/match the two syntaxes as you please.
+Everything is automatically put in the right place.
+
+<CodeBlock>
+```corn
+{
+  foo = {
+    qux = "hello world"
+  }
+
+  foo.bar.baz = 123
+}
+```
+</CodeBlock>
+
+### Inputs
+
+You can optionally write a `let { } in` block before the top-level object.
+This allows you to declare "input" values, which are effectively constants.
+
+Every input declaration and reference starts with a dollar `$`, making them easy to spot.
+
+Inputs can be of any value type, and you can use inputs in place of values at any time.
+
+<CodeBlock>
+```corn
+let {
+  $myValue = 1234
+} in {
+  foo = $myValue
+}
+```
+</CodeBlock>
+
+You can also reference inputs from other inputs:
+
+<CodeBlock>
+```corn
+let {
+  $myValue = 1234
+  $myValueArray = [ $myValue ]
+} in {
+  foo = $myValueArray
+}
+```
+</CodeBlock>
+
+You can also 'environment inputs', using the `$env_` prefix,
+which read their value from environment variables.
+These do not need to be declared, although you can to provide a fallback.
+
+<CodeBlock>
+```corn
+let {
+    // this is not required if `MY_VALUE` env var is set -
+    // no vars can be set in the wasm environment, so the outputs fallback :(
+    $env_MY_VALUE = "fallback"
+} in {
+    my_path = $env_MY_VALUE
+}
+```
+</CodeBlock>
+
+### Interpolation & Merging
+
+Inputs can be taken a step further, with some basic capabilities to compose more complex values.
+
+With strings, you can interpolate string-type inputs into the values:
+
+<CodeBlock>
+```corn
+let {
+  $greeting = "hello"
+  $subject = "world"
+} in {
+  message = "$greeting, $subject"
+}
+```
+</CodeBlock>
+
+You can merge object inputs into other objects values, and array inputs into other array values.
+This allows you to use complex inputs as a 'base' where you may need to add or change a few fields.
+
+This is done using the `..$input` syntax.
+
+<CodeBlock>
+```corn
+let {
+    $baseObj = { a = "hello" }
+    $baseArr = [ "one fish" "red fish" ]
+} in {
+    full = {
+        ..$baseObj
+        b = "world"
+        c = [ ..$baseArr "red fish" "blue fish" ]
+    }
+}
+```
+</CodeBlock>
+<br />
+
+> You can merge anywhere in an object or array. You can also re-declare keys from merged objects.
+> Since keys and merges are evaluated in order, this allows you to overwrite properties.
+
+## Practical example
+
+The following example is lifted from my [ironbar](https://github.com/jakestanger/ironbar) config file.
+It makes heavy use of inputs and their advanced functionalities, as well as some key chaining,
+to cut down on duplicated content and boilerplate.
+
+<CodeBlock>
+```corn
+let {
+    $workspaces = {
+        type = "workspaces"
+        all_monitors = false
+        name_map = {
+            1 = "󰙯"
+            2 = ""
+            3 = ""
+            4 = ""
+            5 = ""
+        }
+    }
+
+    $launcher = {
+        type = "launcher"
+        favorites = [ "firefox" "discord" "steam" ]
+        show_names = false
+        show_icons = true
+    }
+
+    $mpd_base = { type = "music" player_type = "mpd" music_dir = "/home/jake/Music" }
+    $mpd_local = { ..$mpd_base name = "music-local" }
+    $mpd_server = { ..$mpd_base name = "music-server" host = "media-server:6600" }
+
+    $sys_info = {
+        type = "sys_info"
+        format = ["{cpu_percent}% " "{memory_percent}% "]
+        interval.cpu = 1
+    }
+
+    $tray = { type = "tray" }
+    $clock = { type = "clock" }
+
+    $clipboard = { type = "clipboard" max_items = 5 truncate.mode = "end" truncate.length = 30 }
+
+    $cmd_shutdown = "shutdown now"
+    $cmd_reboot = "reboot"
+
+    $power_btn_base = { type = "button" class="power-btn" }
+
+    $power_menu = {
+        type = "custom"
+        class = "power-menu"
+
+        bar = [ { type = "button" name="power-btn" label = "" on_click = "popup:toggle" } ]
+
+        popup = [ {
+            type = "box"
+            orientation = "vertical"
+            widgets = [
+                { type = "label" name = "header" label = "Power menu" }
+                {
+                    type = "box"
+                    name = "buttons"
+                    widgets = [
+                        { ..$power_btn_base label = "<span font-size='20pt'></span>" on_click = "!$cmd_shutdown" }
+                        { ..$power_btn_base label = "<span font-size='20pt'></span>" on_click = "!$cmd_reboot" }
+                    ]
+                }
+            ]
+        } ]
+    }
+
+    $start = [ $workspaces $launcher ]
+    $end = [
+        $mpd_local
+        $mpd_server
+        $sys_info
+        $clipboard
+        $power_menu
+        $clock
+    ]
+
+    $base = {
+        start = $start
+        end = $end
+        icon_theme = "Paper"
+    }
+} in {
+    monitors = {
+        DP-1 = { name = "DP-1" ..$base }
+        DP-2 = { name = "DP-2" ..$base }
+    }
+}
+```
+</CodeBlock>
+
+---
+
+For more information and specifics, check the [full specification](/spec).
