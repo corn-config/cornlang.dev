@@ -10,12 +10,18 @@ const { title} = Astro.props;
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>{title}</title>
+
     <meta charset="UTF-8"/>
-    <meta name="description" content="Astro description">
+    <meta name="description" content="A simple and pain-free configuration language">
     <meta name="viewport" content="width=device-width"/>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
     <meta name="generator" content={Astro.generator}/>
-    <title>{title}</title>
+
+    <meta property="og:title" content={title} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://cornlang.dev" />
+    <meta property="og:image" content="https://cornlang.dev/favicon.svg" />
 </head>
 <body>
 <TopNav />
