@@ -4,8 +4,6 @@ import topLevelAwait from "vite-plugin-top-level-await";
 import cornLanguage from "./cornLanguage.ts";
 import mdx from "@astrojs/mdx";
 
-import vercel from "@astrojs/vercel/static";
-
 // https://astro.build/config
 export default defineConfig({
   markdown: {
@@ -17,7 +15,5 @@ export default defineConfig({
   integrations: [mdx()],
   vite: {
     plugins: [wasm(), topLevelAwait()]
-  },
-  output: "server",
-  adapter: vercel()
+  }
 });
