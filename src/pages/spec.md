@@ -298,6 +298,16 @@ let {
 }
 ```
 
+To escape an input reference (instead writing the literal dollar prefixed string), 
+the dollar should be prefixed with a backslash `\`.
+
+```corn
+{
+  // evaluates as "hello, $subject"
+  greeting = "hello, \$subject"
+}
+```
+
 Non-string input types are not supported.
 
 ### Object merging

@@ -301,7 +301,8 @@ let {
 
 Inputs can be taken a step further, with some basic capabilities to compose more complex values.
 
-With strings, you can interpolate string-type inputs into the values:
+With strings, you can interpolate string-type inputs into the values.
+You can escape interpolation with a backslash `\`.
 
 <CodeBlock>
 ```corn
@@ -310,6 +311,7 @@ let {
   $subject = "world"
 } in {
   message = "$greeting, $subject"
+  escaped = "\$greeting, \$subject"
 }
 ```
 </CodeBlock>
