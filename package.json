@@ -13,7 +13,7 @@
     "@astrojs/mdx": "^1.0.0",
     "@tuzig/toml": "^3.0.0-browser",
     "astro": "^3.0.5",
-    "libcorn": "^0.9.0",
+    "libcorn": "^0.9.1",
     "yaml": "^2.3.1"
   },
   "devDependencies": {

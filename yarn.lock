@@ -1917,10 +1917,10 @@ kleur@^4.0.3, kleur@^4.1.4:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-4.1.5.tgz#95106101795f7050c6c650f350c683febddb1780"
   integrity sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ==
 
-libcorn@^0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/libcorn/-/libcorn-0.9.0.tgz#7923a939af3b200a7c467e0fa326d44053c67ce4"
-  integrity sha512-5wJu60DrlvFehQkAy4jWhjy2FNAlSknG7SmP3jWD6BZLNYX8TN67wOc+wedJFOnpQxrYWuO1x48j6vIiBs9Dng==
+libcorn@^0.9.1:
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/libcorn/-/libcorn-0.9.1.tgz#e862b37987421218c75d5f30a32c48abfe117cfc"
+  integrity sha512-6IYKq9XdLQLegrz5ndVb6qJJjDXPVw1VwoM2psm+u6Lb5s/8jot5kT20QqPrx0zGgdpeyz5SUarWE3r1lubNmQ==
 
 load-yaml-file@^0.2.0:
   version "0.2.0"
