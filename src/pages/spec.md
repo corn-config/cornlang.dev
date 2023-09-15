@@ -158,8 +158,8 @@ There is no restriction on nesting depth.
 
 Objects can be any size, and empty objects are valid.
 
-It is recommended that implementations ensure keys are outputted in a consistent order,
-even if this is not input order, but this is not required. No guarantee about key order is made.
+It is strongly recommended that implementations ensure keys are outputted in the input order. 
+At a minimum, it is required that the output key order is consistent.
 
 ```corn
 {
