@@ -7,7 +7,7 @@ title: Full specification
 
 - Corn is case-sensitive unless specified otherwise. 
 - The configuration must be valid UTF-8.
-- In unsupported scenarios, this produces a parser error.
+- In unsupported scenarios, the parser must error.
 
 ## File structure
 
