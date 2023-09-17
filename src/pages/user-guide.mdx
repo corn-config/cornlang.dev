@@ -48,7 +48,6 @@ cargo add libcorn
 
 The library supports deserialization via `serde`:
 
-
 ```rust
 use serde::Deserialize;
 
@@ -66,7 +65,7 @@ fn main() {
 ```
 
 You can also use `corn::parse` to output an AST in the form of the `corn::Value` enum.
-This can be serialized or used to **TODO**
+This can be serialized or used to implement any custom logic at a lower level.
 
 ```rust
 fn main() {
@@ -96,7 +95,7 @@ pnpm add libcorn
 ```
 
 The library exposes a single `parse` function, which will produce a `Map`.
-Parser errors are exposed in the JS environment and can be caught in the standard manner.
+Parser errors are exposed in the JS environment and can be caught with try/catch.
 
 ```js
 import * as corn from 'libcorn';
@@ -180,9 +179,23 @@ Basic support is available via [nvim-treesitter](https://github.com/nvim-treesit
 
 - Syntax highlighting
 - Parsing and live syntax error checking
-- Support for bracket matching and commenting
+- Bracket matching
+- Commenting support
 
 [parser](https://github.com/jakestanger/tree-sitter-corn)
+
+## Web API
+
+In circumstances where you want to use Corn but cannot use the CLI or a library,
+there is a basic web API implementation available.
+
+A publicly available instance is available on `api.cornlang.dev`, limited to 20 requests per minute and 16k uploads.
+
+The code is also open-source and easily self-hostable.
+
+Full docs can be found in the repo.
+
+[repo](https://github.com/corn-config/corn-api)
 
 ---
 
@@ -268,7 +281,8 @@ So far, you've seen Corn's basic syntax.
 You're probably thinking it looks pretty close to all the others, so what makes it special?
 This next section aims to show the cool stuff that answers that.
 
-The functionality available is kept purposely simple, with the belief that if you need more, you're probably using the wrong tool.
+The functionality available is kept purposely simple -
+if you need more power than what Corn offers, a configuration language is probably not the right tool for the job.
 The few tools available to you here though should prove very powerful.
 
 ### Key chaining
@@ -296,7 +310,7 @@ This allows you to declare "input" values, which are effectively constants.
 
 Every input declaration and reference starts with a dollar `$`, making them easy to spot.
 
-Inputs can be of any value type, and you can use inputs in place of values at any time.
+Inputs can be of any value type, and you can use inputs in place of values at any point.
 
 <CodeBlock>
 ```corn
