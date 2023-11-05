@@ -219,7 +219,9 @@ Beginning with the obligatory hello world example:
 Every Corn file contains a single top-level object.
 Inside that object, much like JSON, are key/value pairs.
 
-Keys are not quoted and can contain any UTF-8 characters (yes, including emoji...) except whitespace, dots `.` and equals `=`.
+Keys are not required to be quoted and can contain any UTF-8 characters (yes, including emoji...).
+Without quotes, you cannot use whitespace, dots `.` and equals `=`. 
+Wrapping a key in single quotes allows you to use any sequence of UTF-8.
 Dots are a special case that we'll see later on.
 
 Line comments are supported with `//`.

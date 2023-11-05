@@ -34,11 +34,15 @@ Optionally, the top-level object may be preceded by a [let block](#let-block).
 [Objects](#object) are made of zero or more pairs of keys and values, 
 written in the format `key = <value>`, where value is a valid [value](#types).
 
-Keys do not require quotes around them. They can consist of any UTF-8 characters, excluding:
+Keys do not require quotes around them. They can consist of any UTF-8 characters.
+When not quoted, the following characters cannot be used:
 
 - [Whitespace](#whitespace)
 - `.` full stop (period)
 - `=` equals
+
+Keys can be wrapped in `'` single quotes to allow for almost any character to be used.
+When wrapped in quotes, spaces can be included. Other forms whitespace characters are not valid.
 
 ```corn
 {
@@ -48,6 +52,7 @@ Keys do not require quotes around them. They can consist of any UTF-8 characters
   with_🌽 = 2
   !"£$%^&*()_ = 3
   j12345 = 4
+  'a quoted.key' = 5
 }
 ```
 
@@ -64,10 +69,29 @@ Each type is detailed below.
 Strings are denoted using double-quotes `"` either side of the value. 
 They contain valid UTF-8 only.
 
-Line breaks inside a string value are not supported.
-
 ```corn
 { foo = "hello world" }
+```
+
+Line breaks inside a string value are supported. 
+Whitespace is automatically trimmed from the start of multi-line strings
+to ignore the indentation level.
+
+For example:
+
+```corn
+{
+  foo = "
+    hello
+      world
+  "
+}
+```
+
+Will result in:
+```
+hello
+  wolrd
 ```
 
 The following standard escape characters are supported:
@@ -400,6 +424,13 @@ The value associated with each key must therefore either be undefined or an obje
 
 There is no restriction on the depth at which keys can be chained.
 There is no restriction on the depth at which key chaining can start.
+
+Quoted keys containing `.` full stops (periods) are not expanded.
+```corn
+{
+  'foo.bar' = "baz" // creates key literally called "foo.bar"
+}
+```
 
 ## Comments
 
