@@ -219,8 +219,10 @@ Beginning with the obligatory hello world example:
 Every Corn file contains a single top-level object.
 Inside that object, much like JSON, are key/value pairs.
 
-Keys are not quoted and can contain any UTF-8 characters (yes, including emoji...) except whitespace, dots `.` and equals `=`.
+Keys are not required to be quoted and can contain any UTF-8 characters (yes, including emoji...)
+except whitespace, dots `.` and equals `=`.
 Dots are a special case that we'll see later on.
+You can optionally use single quotes around a key to avoid these limitations.
 
 Line comments are supported with `//`.
 
@@ -239,6 +241,8 @@ Values can be any type, again much like JSON:
 }
 ```
 </CodeBlock>
+
+Newlines are supported in strings. Indentation whitespace will automatically be trimmed.
 
 Note no punctuation is needed between keys.
 
