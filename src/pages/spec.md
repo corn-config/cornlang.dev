@@ -34,11 +34,13 @@ Optionally, the top-level object may be preceded by a [let block](#let-block).
 [Objects](#object) are made of zero or more pairs of keys and values, 
 written in the format `key = <value>`, where value is a valid [value](#types).
 
-Keys do not require quotes around them. They can consist of any UTF-8 characters, excluding:
+Keys do not require quotes around them. Unquoted keys can consist of any UTF-8 characters, excluding:
 
 - [Whitespace](#whitespace)
 - `.` full stop (period)
 - `=` equals
+
+Optionally, a key can be surrounded by single quotes `'`. This removes all of the above limitations.
 
 ```corn
 {
@@ -48,6 +50,9 @@ Keys do not require quotes around them. They can consist of any UTF-8 characters
   with_🌽 = 2
   !"£$%^&*()_ = 3
   j12345 = 4
+  
+  'with space' = 5
+  'foo.bar'.baz = 6
 }
 ```
 
@@ -64,10 +69,36 @@ Each type is detailed below.
 Strings are denoted using double-quotes `"` either side of the value. 
 They contain valid UTF-8 only.
 
-Line breaks inside a string value are not supported.
-
 ```corn
 { foo = "hello world" }
+```
+
+Line breaks inside a string value are supported. 
+Leading whitespace is removed such that text is aligned relative to the least-indented line.
+
+In the below examples, the least-indented line is the closing quote mark:
+
+```corn
+{
+  foo = "
+    hello
+    world
+  "
+  
+  bar = "
+    hello
+        world
+  "
+}
+```
+
+This results in the following JSON output:
+
+```json
+{
+  "foo": "  hello\n  world\n",
+  "bar": "  hello\n      world\n"
+}
 ```
 
 The following standard escape characters are supported:
