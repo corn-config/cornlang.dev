@@ -38,7 +38,7 @@ const sampleCodeHtml = highlighter.codeToHtml(sampleCode, {lang: 'corn'});
                 <li>YAML is far too complex and its whitespace rules make it error-prone.</li>
                 <li>Nix is a full-sized language and not easy to integrate.</li>
             </ul>
-            <div>
+            <div class="link-buttons">
                 <LinkButton text="Get started" href="user-guide" />
                 <LinkButton text="Full specification" href="spec" />
             </div>
@@ -141,10 +141,17 @@ const sampleCodeHtml = highlighter.codeToHtml(sampleCode, {lang: 'corn'});
         border-radius: 3px;
         border: 1px solid white;
         max-width: 800px;
+        overflow-x: visible;
     }
 
     .code-sample code {
         white-space: pre-wrap;
+    }
+
+    .link-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1em;
     }
 
     .features {
@@ -170,6 +177,17 @@ const sampleCodeHtml = highlighter.codeToHtml(sampleCode, {lang: 'corn'});
             grid-row: unset;
             grid-column: 1 / 3;
             max-width: unset;
+            overflow-x: scroll;
+        }
+
+        .features {
+            margin-inline: 20px;
+        }
+    }
+
+    @media screen and (max-width: 680px) {
+        .link-buttons {
+            justify-content: center;
         }
     }
 
