@@ -546,6 +546,6 @@ Corn files should use the `application/corn` MIME type.
 
 ## Grammar
 
-A formal language grammar can be found in the repo [here](https://github.com/JakeStanger/corn/blob/master/libcorn/src/grammar.pest).
+A formal language grammar can be found in the repo [here](https://github.com/corn-config/corn/blob/master/src/grammar.pest).
 
 The Rust parser code is automatically generated from this.
